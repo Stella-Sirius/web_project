@@ -62,6 +62,7 @@ export class ReviewTutorView extends React.Component {
     }
 
     handleReview = (review) => {
+        review['tutorialId'] = this.props.match.params.id;
         (this.state.tutorial.reviewId) ?
             ReviewService.updateReview(this.state.tutorial.reviewId, review).then((data) => {
                 toast.success('Successfully updated');

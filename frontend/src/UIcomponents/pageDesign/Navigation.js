@@ -1,22 +1,22 @@
 import React from 'react';
-import {Route, Link, withRouter} from 'react-router-dom';
-import {Avatar, FontIcon, ListItem, NavigationDrawer, Button, IconSeparator } from 'react-md';
+import { Route, Link, withRouter } from 'react-router-dom';
+import { Avatar, FontIcon, ListItem, NavigationDrawer, Button, IconSeparator } from 'react-md';
 import imgURL from '../../Images/logoIcon.png';
 import NavigationMenuStyle from '../../css/Navigation.css';
 import LoginService from '../../Services/LoginService';
 import UserService from '../../Services/UserService';
 import { upperFirst } from 'lodash/string';
 
-const Item = ({label, children}) => (
-    <IconSeparator style={{fontFamily: 'cursive', fontSize: '25px', fontWeight: 'bold'}} label={label} iconBefore
-                   component="li" className="md-cell md-cell--12">
+const Item = ({ label, children }) => (
+    <IconSeparator style={{ fontFamily: 'cursive', fontSize: '25px', fontWeight: 'bold' }} label={label} iconBefore
+        component="li" className="md-cell md-cell--12">
         {children}
     </IconSeparator>
 );
 
-const NavLink = ({label, to, exact, icon}) => (
+const NavLink = ({ label, to, exact, icon }) => (
     <Route path={to} exact={exact}>
-        {({match}) => {
+        {({ match }) => {
             let leftIcon;
             if (icon) {
                 leftIcon = <FontIcon>{icon}</FontIcon>;
@@ -112,17 +112,17 @@ const logInNavItemsTutor = [
         to: '/contact-us',
         icon: 'send'
     }
-   
+
 ];
 
 
 class NavigationMenu extends React.Component {
 
     componentWillReceiveProps = (nextProps) => {
-        this.setState({toolbarTitle: this.getCurrentTitle(nextProps)});
+        this.setState({ toolbarTitle: this.getCurrentTitle(nextProps) });
     };
 
-    getCurrentTitle = ({location: {pathname}}) => {
+    getCurrentTitle = ({ location: { pathname } }) => {
         const lastSection = pathname.substring(pathname.lastIndexOf('/') + 1);
         if (lastSection === 'navigation-drawers') {
             return 'Inbox';
@@ -147,13 +147,13 @@ class NavigationMenu extends React.Component {
             attractions: [],
             titles: [],
             toolbarTitle: this.getCurrentTitle(props),
-            navItems: LoginService.isAuthenticated() ? (UserService.getCurrentUser().userType === 'customer'? logInNavItemsCustomer : logInNavItemsTutor) :defaultNavItems
+            navItems: LoginService.isAuthenticated() ? (UserService.getCurrentUser().userType === 'customer' ? logInNavItemsCustomer : logInNavItemsTutor) : defaultNavItems
         };
     }
 
     logout = () => {
         LoginService.logout();
-        this.setState({navItems: LoginService.isAuthenticated() ? (UserService.getCurrentUser().userType === 'customer'? logInNavItemsCustomer : logInNavItemsTutor) :defaultNavItems}, ()=>{
+        this.setState({ navItems: LoginService.isAuthenticated() ? (UserService.getCurrentUser().userType === 'customer' ? logInNavItemsCustomer : logInNavItemsTutor) : defaultNavItems }, () => {
             this.props.history.push('/');
         });
     };
@@ -167,23 +167,28 @@ class NavigationMenu extends React.Component {
                     className="NavigationMenuStyle"
                     drawerTitle="Menu"
                     toolbarActions={
-                        LoginService.isAuthenticated() ?                            
-                            <Button id="logoutButton" type = "button" flat primary swapTheming onClick={this.logout}>Log out</Button>                            
+                        LoginService.isAuthenticated() ?
+                            <Button id="logoutButton" type="button" flat primary swapTheming onClick={this.logout}>Log out</Button>
                             :
                             <div id="noneName">
-                              <Button type = "button" id="loginButton" flat primary swapTheming onClick={()=> this.props.history.push('/login')}>Login</Button>
-                              <Button type = "button" id="RegistrationButton" flat primary swapTheming onClick={()=> this.props.history.push('/register')}>Register</Button>
+                                <Button type="button" id="loginButton" flat primary swapTheming onClick={() => this.props.history.push('/login')}>Login</Button>
+                                <Button type="button" id="RegistrationButton" flat primary swapTheming onClick={() => this.props.history.push('/register')}>Register</Button>
                             </div>
                     }
                     navItems={
-                        this.state.navItems.map(props => <NavLink {...props} key={props.to}/>)
+                        this.state.navItems.map(props => <NavLink {...props} key={props.to} />)
                     }
                     toolbarTitle={
 
                         <Item label="FindMyTutor">
-                            <Button flat onClick={() => this.props.history.push('/')}><Avatar src={imgURL}
-                                                                                         role="presentation"
-                                                                                         suffix="green-400"/></Button>
+                            <Button
+                                icon
+                                style={{ padding: 0 }}
+                                onClick={() => this.props.history.push('/')}>
+                                <Avatar src={imgURL}
+                                    role="presentation"
+                                    suffix="green-400" />
+                            </Button>
                         </Item>
                     }
 
@@ -193,9 +198,9 @@ class NavigationMenu extends React.Component {
 
             </div>
         );
-//        <Avatar src={imgURL}
-//                role="presentation"
-//                suffix="green-300"/>
+        //        <Avatar src={imgURL}
+        //                role="presentation"
+        //                suffix="green-300"/>
     }
 }
 

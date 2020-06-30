@@ -18,7 +18,8 @@ export default class ReviewService {
                     friendlinessRating: review.friendlinessRating,
                     teachingStyleRating: review.teachingStyleRating,
                     overallRating: review.overallRating,
-                    text: review.text
+                    text: review.text,
+                    tutorialId: review.tutorialId,
                 }, function (data) {
                     resolve(data);
                 }, function (textStatus) {
@@ -50,7 +51,8 @@ export default class ReviewService {
                     friendlinessRating: review.friendlinessRating,
                     teachingStyleRating: review.teachingStyleRating,
                     overallRating: review.overallRating,
-                    text: review.text
+                    text: review.text,
+                    tutorialId: review.tutorialId,
                 }, function (data) {
                     resolve(data);
                 }, function (textStatus) {

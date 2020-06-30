@@ -138,6 +138,7 @@ const createReview = (req, res) => {
             let error = updateReviewForCustomer(req.email, review._id);
             if (!error) {
                 error = updateReviewForTutor(req.body.tutorEmail, review._id);
+                error = !error && updateReviewInTutorial(req.body.tutorialId, review._id);
                 if (!error) {
                     error = updateRatingForTutor(req.body.tutorEmail);
                     emailService.emailNotification(req.body.tutorEmail, req.body.tutorFirstName, "New Feedback Received", emailService.reviewTutorial);
@@ -251,6 +252,17 @@ const verifyReviewBody = (req) => {
         };
     }
 
+    if (!Object.prototype.hasOwnProperty.call(req.body, 'tutorialId')) {
+        return {
+            ifValid: false,
+            message: {
+                error: 'Bad Request',
+                message:
+                    'The request body must contain a tutorialId property'
+            }
+        };
+    }
+
     if (!Object.prototype.hasOwnProperty.call(req.body, 'comprehensionRating')) {
         return {
             ifValid: false,
@@ -302,6 +314,19 @@ const updateReviewForTutor = (email, reviewId) => {
         return error;
     });
 
+};
+
+const updateReviewInTutorial = (_id, reviewId) => {
+    tutorialModel.updateOne(
+        { _id },
+        {
+            reviewId,
+            tutorialStatus: 'reviewed'
+        }).exec().catch(error => {
+            console.log('error by adding a review id to the tutor');
+            return error;
+        });
+    return false;
 };
 
 const updateRatingForTutor = (email) => {
