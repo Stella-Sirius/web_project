@@ -1,7 +1,7 @@
 const tutorialModel = require('../models/tutorialModel');
 const tutorModel = require('../models/tutorModel');
 const emailService = require('../services/emailService');
-const requestBodyVerificationService =  require('../services/requestBodyVerificationService');
+const requestBodyVerificationService = require('../services/requestBodyVerificationService');
 
 const getTutorProfile = (req, res) => {
     if (req.userType === 'tutor') {
@@ -150,7 +150,7 @@ const sortOnTimeSlots = (timeSlotIds) => {
             combinedTimeSlotIds.push(tempTimeSlot);
         }
     }
-    if(timeSlotIds.length === 1){
+    if (timeSlotIds.length === 1) {
         combinedTimeSlotIds = timeSlotIds;
     }
     return combinedTimeSlotIds;
@@ -175,7 +175,7 @@ const confirmTutorial = async (req, res) => {
 
     if (req.body.status === 'confirmed') {
         tutorialModel.updateOne(
-            {_id: req.body._id}, {tutorialStatus: req.body.status}
+            { _id: req.body._id }, { tutorialStatus: req.body.status }
         ).then(tutorial => {
             emailService.emailNotification(
                 req.body.customerEmail, req.body.customerFirstName, 'Tutorial Session Confirmed', emailService.confirmTutorial
@@ -196,12 +196,12 @@ const confirmTutorial = async (req, res) => {
 const getTutorialsForTutor = (req, res) => {
     const email = req.email;
     tutorialModel.find(
-        {tutorEmail: email}
+        { tutorEmail: email }
     ).then(tutorials => {
         return res.status(200).json(tutorials)
     }).catch(error => {
         console.log('internal server error by searching');
-        return res.status(400).json({error: error.message})
+        return res.status(400).json({ error: error.message })
     })
 };
 
@@ -228,51 +228,45 @@ const searchTutor = (req, res) => {
     })
 };
 
-const autoCompleteForSearch = async (req, res) => {
+const autoCompleteForSearch = (req, res) => {
     if (!Object.prototype.hasOwnProperty.call(req.query, 'q'))
         return res.status(200).json({
             error: 'Bad Request',
             message: 'The request query must contain a q property'
         });
-    // if (!req.query.q)
-    //     return res.status(200).json({});
+
     const queryString = req.query.q;
     const pattern = new RegExp(`${queryString}`, 'i');
-    let filteredCourses = [];
-    // TODO: Combine two queries to one
-    try {
-        const courses = await tutorModel.distinct('courses');
-        const tutorNames = await tutorModel.find(
+
+    Promise.all([
+        tutorModel.distinct('courses'),
+        tutorModel.find(
             { $or: [{ 'firstName': pattern }, { 'lastName': pattern }] },
             { firstName: true, lastName: true, _id: false }
-        );
-        filteredCourses = courses.reduce((matches, c) => {
+        )
+    ]).then((values) => {
+        let filteredCourses = values[0].reduce((matches, c) => {
             if (pattern.test(c)) {
-                // let pos = 1;
-                // matches.push({
-                //     label: [
-                //         <span key="bold" className="md-font-bold">{c.substring(0, l)}</span>,
-                //         c.substring(length),
-                //     ],
-                //     value: c,
-                // });
                 matches.push(c);
             }
             return matches;
         }, []);
-        filteredTutorName = filteredTutorName = tutorNames.reduce((matches, tN) => {
+        let filteredTutorName = values[1].reduce((matches, tN) => {
             const { firstName, lastName } = tN;
             matches.push(lastName + ', ' + firstName);
             return matches;
         }, []);
-        return res.status(200).json([...filteredCourses, ...filteredTutorName]);
-    } catch (error) {
+        return res.status(200).json([
+            ...filteredCourses,
+            ...filteredTutorName
+        ]);
+    }).catch((error) => {
         console.log('internal server error by auto complete function for searching');
         return res.status(400).json({
             error: 'Internal Server Error',
             message: 'Error in auto complete function: ' + error.message
         });
-    }
+    })
 };
 
 const searchTutorByEmail = (req, res) => {

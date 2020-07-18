@@ -25,7 +25,6 @@ export class BookingListView extends React.Component {
         });
         let userType = UserService.getCurrentUser().userType;
         if (!userType) {
-            // TODO: Need Test
             toast.error("Need login information!");
             this.props.history.goBack();
         }
@@ -92,8 +91,6 @@ export class BookingListView extends React.Component {
     };
 
     tutorialCompareFunction = (a, b) => {
-        console.log(a.startTime);
-        console.log(this.nowTime);
         if(a.startTime > this.nowTime && b.startTime > this.nowTime){
             return a.startTime - b.startTime;
         }
@@ -114,7 +111,6 @@ export class BookingListView extends React.Component {
             return <h2>Loading</h2>
         }
 
-        // TODO: sort tutorials
         return (
             <div>
                 <Navigation />
