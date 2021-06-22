@@ -1,4 +1,4 @@
-# SEBA 2020SS FindMyTutor
+# 2020SS Web-Project
 
 ## Installation
 Using Terminal
